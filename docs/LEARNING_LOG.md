@@ -76,3 +76,25 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 ### Q&A
 - **page.tsx vs layout.tsx?** The layout is the frame that wraps every page and stays put (header, nav); the page is the content for one URL. The folder decides the URL: `src/app/machines/page.tsx` → `/machines`. Like Ember's `application.hbs` with `{{outlet}}` vs a route template.
 - **VS Code terminal or Ubuntu terminal?** Same thing when the WSL badge shows. VS Code is just handier. Use a second tab for Git while `pnpm dev` runs.
+- **What are secrets?** Passwords and keys the app uses to reach other services (database password, AI API key, AWS keys). Like house keys: anyone with a copy gets in. Real values go in `.env.local`; `.env.example` lists only the names.
+
+### Step 4: learning log
+- **What we did:** added `docs/LEARNING_LOG.md` (this file).
+- Docs live at the repo root beside `src/`; `src/` is only for app code that gets built and shipped.
+- This log is public; the project memory bank stays private, outside the repo.
+- **Interview:** "I keep a learning log in the repo, so the history shows how I picked up each technology."
+
+### Step 5: first commit
+- **What we did:** committed the config files and this log.
+- `git status` shows **modified** (tracked files that changed) vs **untracked** (new) files.
+- `git add` puts changes in the staging area (the box); `git commit` seals it with a label, saved locally only.
+- `git log --oneline` lists commits; `HEAD -> main` marks where I am.
+- **Interview:** "I make small commits with clear messages, so the history tells the story of the project."
+
+### Step 6: GitHub repo and first push
+- **What we did:** created the empty public repo `phn25/vaultrun` and pushed `main`.
+- Created it with no README, .gitignore or license, so GitHub's files don't clash with mine.
+- Checked first that commits use the no-reply email, since public history is forever.
+- `git remote add origin <url>` saves GitHub's address as `origin`; `git push -u origin main` uploads and remembers the link, so next time it's just `git push`.
+- **Why it matters:** the code is backed up and the Mac can get it with `git clone`. Habit: `git pull` before starting, commit + push before stopping.
+- **Interview:** "The repo has been public since day one, with only fake data and no secrets in its history."

@@ -98,3 +98,60 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - `git remote add origin <url>` saves GitHub's address as `origin`; `git push -u origin main` uploads and remembers the link, so next time it's just `git push`.
 - **Why it matters:** the code is backed up and the Mac can get it with `git clone`. Habit: `git pull` before starting, commit + push before stopping.
 - **Interview:** "The repo has been public since day one, with only fake data and no secrets in its history."
+---
+
+## 2026-10-28 · Week 2 Session 1: Machines page
+
+### Session start
+- `git pull`, then `pnpm install`, then `pnpm dev`. Keep `pnpm dev` in one terminal tab and use a second tab for Git; Ctrl+C stops it.
+- **Interview:** "I start every session by syncing with main, so I never build on stale code."
+
+### TypeScript types
+- `type Machine = {...}` describes the shape of an object. A union type (`"active" | "needs-service" | "offline"`) limits a value to fixed strings, so typos are flagged in the editor.
+- `.ts` is plain logic/data; `.tsx` is a file with JSX.
+- **Interview:** "I model domain data with TypeScript types, so invalid states are caught at compile time."
+
+### Components, props, JSX
+- A component is a function that takes props (its inputs, like Ember's `@machine`) and returns JSX: HTML-like markup inside JavaScript. `{ }` holds JavaScript; `className` replaces `class`.
+- `Record<K, V>` is a typed map that must have every key (used for status → badge color).
+- **Interview:** "I break the UI into small typed components driven by props."
+
+### Pages and lists
+- The folder sets the URL: `src/app/machines/page.tsx` → `/machines`. `/` is kept free for the dashboard.
+- `machines.map(m => <MachineCard key={m.id} machine={m} />)` turns data into components (like Java's `stream().map()`); `key` lets React tell items apart.
+- **Interview:** "I render lists by mapping typed data to reusable components."
+
+### Tailwind + mobile-first
+- Utility classes go on the element itself (`p-4`, `mt-4` = 16px; one step = 4px), so there's no separate CSS file to keep in sync.
+- No prefix = all sizes (phones first); `sm:` = 640px+, `lg:` = 1024px+, each overriding the smaller rule.
+- The parent handles layout; the component handles its own look.
+- Test at phone width: DevTools (F12) → device toolbar (Ctrl+Shift+M).
+- **Interview:** "I build mobile-first with Tailwind breakpoints and test at phone width first."
+
+### Git
+- `git restore <file>` puts a file back to its last committed version.
+- **Interview:** "I commit one finished feature at a time with a message that says what it adds."
+
+---
+
+## 2026-10-29 · Week 1 concepts, revisited
+
+### Git remotes
+- `origin` is a nickname for the GitHub repo's address, not a branch; `main` is the branch.
+- `-u` links local `main` to `origin/main`, so later a plain `git push` / `git pull` works.
+- A new file shows as **untracked**; an edited tracked file shows as **changes not staged**.
+
+### Secrets
+- Keep `.env*` in `.gitignore` with a `!.env.example` exception; deleting the rule would expose the real `.env`.
+- If a key is ever pushed, **revoke it first**. Deleting it in a later commit doesn't help: history keeps it and bots scan GitHub within minutes.
+
+### layout.tsx vs page.tsx
+- The layout is the frame on every page and renders `{children}`; each URL's `page.tsx` fills that slot.
+
+### Docker "dependencies"
+- Services the app talks to (Postgres, later Redis), not code libraries (pnpm handles those). One command starts them; deleting the container leaves the PC clean.
+
+### nvm + .nvmrc
+- `.nvmrc` says `24`; `nvm use` switches to it, so the PC, Mac, CI and server all match. Like a recipe that says "bake at 180°C" so every oven gives the same cake.
+
+- **Interview (dev setup):** "I develop in WSL2 so my environment matches the Linux servers I deploy to. I pin Node 24 with nvm and `.nvmrc`, use pnpm for fast, strict installs, authenticate to GitHub with an SSH key, and keep secrets out of Git with a committed `.env.example`."

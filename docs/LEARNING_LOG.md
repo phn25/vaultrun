@@ -155,3 +155,28 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - `.nvmrc` says `24`; `nvm use` switches to it, so the PC, Mac, CI and server all match. Like a recipe that says "bake at 180°C" so every oven gives the same cake.
 
 - **Interview (dev setup):** "I develop in WSL2 so my environment matches the Linux servers I deploy to. I pin Node 24 with nvm and `.nvmrc`, use pnpm for fast, strict installs, authenticate to GitHub with an SSH key, and keep secrets out of Git with a committed `.env.example`."
+
+---
+
+## 2026-11-01 · Week 2 Session 2: Vercel deploy and lint CI
+
+### Vercel (continuous deployment)
+- Vercel is connected to the GitHub repo: it runs `pnpm build` on its servers and hosts the result at a public URL.
+- Every push to `main` redeploys automatically. No environment variables yet, because there are no secrets, and the demo uses fake data only.
+- Vercel builds *and* hosts; Jenkins only builds what you script. GitHub Actions is the closer Jenkins match.
+- **Interview:** "The public demo deploys automatically to Vercel on every push to main, using fake data only."
+
+### CI with GitHub Actions
+- CI = an automatic check on every push and pull request, like a head chef checking each dish before it leaves the kitchen. CD = carrying approved dishes out.
+- A workflow is a YAML file in `.github/workflows/`. GitHub starts a fresh Linux machine, runs the steps, then throws it away.
+- YAML: settings text where indentation shows nesting and `-` starts a list item.
+- `ci.yml` uses the same Node (`.nvmrc`), pnpm (`packageManager`) and locked libraries (`--frozen-lockfile`) as my PC.
+- **Interview:** "Every push and PR runs lint in GitHub Actions, using the same pinned Node and pnpm versions as local dev."
+
+### ESLint
+- Reads code without running it and flags likely bugs: unused variables, a missing `key` in `.map()`, `any` in TypeScript.
+- Installed by `create-next-app --eslint` as a devDependency (a tool for building and checking, not shipped to users). Rules come from Next.js's packs in `eslint.config.mjs`.
+- No output = pass. TypeScript checks types; ESLint checks patterns.
+
+### Next.js vs React
+- React = the building blocks (components). Next.js = the framework around them: URLs from folders, a server side, and a production build.

@@ -180,3 +180,14 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 
 ### Next.js vs React
 - React = the building blocks (components). Next.js = the framework around them: URLs from folders, a server side, and a production build.
+
+---
+
+## 2026-11-05 · Week 3 Session 1: Postgres in Docker
+
+- **Feature branches + PRs:** every feature gets its own branch and pull request, so CI (lint) and a Vercel preview run before anything reaches `main`. Squash merge = one clean commit per feature. *Interview:* "Every change goes through a PR with CI checks before it's merged."
+- **Environment variables:** `DATABASE_URL` bundles user, password, host, port and database into one string. Real values live in `.env.local` (gitignored); `.env.example` lists only the names.
+- **Docker Compose:** a committed recipe for containers. One `db` service runs Postgres 17 + pgvector, reads its settings from `.env.local`, listens only on `127.0.0.1:5432`, and keeps data in a named volume so it survives `docker compose down`. *Interview:* "Local dependencies run in Docker Compose, so setting up the project is one command."
+- **psql:** `docker compose exec db psql -U vaultrun -d vaultrun` opens a SQL prompt inside the running container; `\dt` lists tables, `\q` quits.
+- **pgvector:** a Postgres add-on for searching by meaning (not a separate database); it will power the repair assistant.
+- **ORM choice:** an ORM translates between TypeScript and SQL with typed queries and migrations. Chose **Drizzle** over Prisma: SQL-like queries, schema in plain TypeScript, built-in pgvector support.

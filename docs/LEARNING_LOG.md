@@ -191,3 +191,20 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - **psql:** `docker compose exec db psql -U vaultrun -d vaultrun` opens a SQL prompt inside the running container; `\dt` lists tables, `\q` quits.
 - **pgvector:** a Postgres add-on for searching by meaning (not a separate database); it will power the repair assistant.
 - **ORM choice:** an ORM translates between TypeScript and SQL with typed queries and migrations. Chose **Drizzle** over Prisma: SQL-like queries, schema in plain TypeScript, built-in pgvector support.
+
+---
+
+## 2026-11-07 · Week 3 Session 2: Drizzle, first migration, seed
+
+- **Drizzle ORM:** translates TypeScript into SQL. `drizzle-orm` runs typed queries in the app; `drizzle-kit` is a dev tool that writes and runs migrations. `pg` is the Postgres driver (like JDBC).
+  *Interview:* "I use Drizzle ORM with node-postgres, with the schema written in plain TypeScript."
+- **dependencies vs devDependencies:** runtime libraries ship with the app; tools stay in development. pnpm blocks install scripts until approved (`pnpm approve-builds`, saved in `pnpm-workspace.yaml`), which defends against supply-chain attacks.
+- **Schema:** `src/db/schema.ts` describes the table's shape (like a Hibernate `@Entity`); seed data fills it. Each column has a TypeScript name (`targetFloat`) and a SQL name (`target_float`).
+- **Enums vs text:** a Postgres enum works like a `CHECK (status IN (...))` and guards data from every source, not only app code. Use an enum for states the app defines (`status`), and text for real-world lists that grow (areas, models).
+  *Interview:* "I used enums only for app-defined states, so new equipment or areas don't need a migration."
+- **Migrations:** numbered SQL change scripts in `drizzle/`, committed with the code. Schema = what you want, migration = the step, `migrate` = do it. Re-running is safe; applied files are tracked.
+  *Interview:* "Schema changes go through versioned migrations, so every environment gets the same structure."
+- **Debugging a hidden error:** when a tool hides the cause, connect with the plain driver to see the real message. Postgres reads `POSTGRES_PASSWORD` only when it first creates its volume.
+- **Seed + db client:** `src/db/index.ts` is one shared connection pool. `pnpm db:seed` deletes, then inserts the 14 fake machines, so it's idempotent.
+  *Interview:* "An idempotent seed script loads fake demo data, so real data never touches the repo."
+- **pnpm build:** type-checks, compiles and pre-renders pages. Vercel runs it with no database, so pages must not query the DB at build time without a hosted database.

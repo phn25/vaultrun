@@ -1,6 +1,6 @@
 import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-// Fixed lists, same values as the Machine type in src/data/machines.ts
+// Fixed list for app-defined states (enum = only these values allowed)
 export const statusEnum = pgEnum("machine_status", ["active", "needs-service", "offline"]);
 
 export const machines = pgTable("machines", {
@@ -12,3 +12,7 @@ export const machines = pgTable("machines", {
   targetFloat: integer("target_float").notNull(), // whole dollars
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Types derived from the table, so the shape is defined in one place
+export type Machine = typeof machines.$inferSelect;
+export type MachineStatus = Machine["status"];

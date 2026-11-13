@@ -1,4 +1,4 @@
-import type { Machine, MachineStatus } from "@/data/machines";
+import type { Machine, MachineStatus } from "@/db/schema";
 
 const statusStyles: Record<MachineStatus, string> = {
   active: "bg-green-100 text-green-800",

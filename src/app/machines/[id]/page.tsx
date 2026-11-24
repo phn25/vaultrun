@@ -33,6 +33,7 @@ export default async function MachineDetailPage({
         <Row label="Status" value={statusLabels[machine.status]} />
         <Row label="Area" value={machine.area} />
         <Row label="Model" value={machine.model} />
+        <Row label="Serial number" value={machine.serialNumber ?? "Not set"} />
         <Row label="Target float" value={`$${machine.targetFloat.toLocaleString()}`} />
         <Row label="Machine ID" value={machine.id} />
       </dl>

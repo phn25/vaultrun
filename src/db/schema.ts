@@ -8,6 +8,7 @@ export const machines = pgTable("machines", {
   name: text("name").notNull(),
   area: text("area").notNull(), // neighborhood; open list, so plain text
   model: text("model").notNull(), // real-world equipment; open list
+  serialNumber: text("serial_number"), // from the machine's label; blank until Riley adds it
   status: statusEnum("status").notNull().default("active"),
   targetFloat: integer("target_float").notNull(), // whole dollars
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

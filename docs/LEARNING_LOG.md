@@ -208,3 +208,85 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - **Seed + db client:** `src/db/index.ts` is one shared connection pool. `pnpm db:seed` deletes, then inserts the 14 fake machines, so it's idempotent.
   *Interview:* "An idempotent seed script loads fake demo data, so real data never touches the repo."
 - **pnpm build:** type-checks, compiles and pre-renders pages. Vercel runs it with no database, so pages must not query the DB at build time without a hosted database.
+
+---
+
+## 2026-11-12 · Week 4 Session 1: architecture doc, Neon, /machines reads Postgres
+
+### Architecture doc (`docs/01-architecture.md`)
+- A one-page map of the system: the parts, how they connect, and **why** each was chosen.
+- Each decision is written with its reason **and** the alternative I rejected; the "instead of" shows the trade-off was weighed.
+- Why TypeScript everywhere: one language for the app, worker and scripts, and types catch mistakes before the code runs.
+- *Interview:* "I keep a short architecture doc in the repo with each major decision, its reason and the alternative I rejected."
+
+### The cast so far
+| Name | What it is |
+| --- | --- |
+| Postgres | the database |
+| Docker | runs Postgres on my PC (dev) |
+| Neon | runs Postgres in the cloud (public demo) |
+| Drizzle | translates between TypeScript and SQL (like JPA/Hibernate, lighter) |
+| Migrations | the steps that build the tables |
+| Seed | fake starting data for an empty database |
+| pnpm scripts | shortcuts in `package.json` that run Drizzle or the seed |
+| Vercel | hosts the live demo |
+
+### Neon: a hosted Postgres for the demo
+- Vercel can't reach the Docker database on my PC, so the demo needs a database on the internet.
+- Same migrations and seed, different `DATABASE_URL`: `VAR=value command` sets a variable for one command only and wins over `.env.local`.
+- Separate dev (Docker) and production (Neon) databases: experiments never break the live site.
+- `sslmode=verify-full`: encrypt the connection **and** check the server's certificate (its ID) so nothing can pretend to be the database.
+- *Interview:* "I develop against Postgres in Docker and deploy to a hosted Postgres; the same Drizzle migrations build both, only DATABASE_URL changes."
+
+### Secrets in Vercel
+- Vercel's Environment Variables page is the hosted version of `.env.local`. The value is stored as **Secret** (unreadable after saving) for Production and Preview.
+- *Interview:* "Secrets live in the host's environment variables, never in the repo; locally they're in a gitignored .env.local."
+
+### /machines reads from the database
+- `Machine` type comes from the table: `typeof machines.$inferSelect` (a row you read). `$inferInsert` is the shape for inserting (DB-filled columns optional). One place defines the shape.
+- Before deleting a file, `grep -rn` for everything that imports it, move each use, then delete.
+- The page is an async **Server Component**: it queries the DB on the server, so the password never reaches the browser.
+- With Next.js 16 Cache Components: `await connection()` = "needs a real request, don't pre-build"; `loading.tsx` is the Suspense fallback shown while the data loads.
+- **Partial prerendering (◐):** the frame is pre-built and appears instantly; the DB part streams in fresh on each visit.
+- `pnpm dev` builds pages on the fly (forgiving); `pnpm build` builds the whole app optimized and type-checks everything, the same as Vercel does.
+- *Interview:* "My pages are server components that query Postgres through Drizzle; with partial prerendering the static shell loads instantly and the data streams in behind a Suspense loading state."
+
+---
+
+## 2026-11-24 · Week 4 Session 2: machine detail page, security patch, serial number
+
+### How the pieces connect
+- The code is the same everywhere; only `DATABASE_URL` changes. On my PC it comes from `.env.local` (Docker Postgres); on Vercel it comes from Vercel's environment variables (Neon).
+- Vercel runs the app; Neon stores the data. Locally, `pnpm dev` plays Vercel's part and Docker plays Neon's.
+- The public demo (Vercel + Neon) only ever holds fake data. Riley's real app will run separately on AWS with its own private database and a login (Sprint 10).
+- A push to GitHub starts CI (lint) and a Vercel preview build at the same time; merging to `main` updates the live demo.
+- *Interview:* "Same code in every environment; config like DATABASE_URL comes from env vars, so dev uses Docker Postgres and production uses a hosted Postgres."
+
+### Dynamic routes: one page for every machine
+- A folder named `[id]` is a fill-in-the-blank: `src/app/machines/[id]/page.tsx` serves `/machines/m01`, `/machines/m02`, and so on.
+- `const { id } = await params` reads the value from the URL (Next.js hands `params` over as a promise).
+- `eq(machines.id, id)` is Drizzle for `WHERE id = 'm03'`; `const [machine] = ...` takes the first row.
+- With partial prefetching on, every page that loads fresh data needs its own `loading.tsx` (a Suspense placeholder), or Next.js warns about "uncached data outside of Suspense".
+- *Interview:* "Machine detail is a dynamic route; the server component reads the id from the URL and queries Postgres through Drizzle, with a Suspense loading state."
+
+### notFound()
+- `notFound()` hands over to Next.js's built-in 404 page in one line.
+- Because the page streams (the frame is sent before the database answers), the status code has already gone out as 200, so Next.js marks the 404 page `noindex` instead.
+- *Interview:* "Unknown IDs call notFound(); because the route streams, Next.js serves the 404 page with a noindex tag."
+
+### Links and shared values
+- `next/link` (imported here as `NextLink`) switches pages without a full reload and pre-loads the next page, so clicks feel instant.
+- `export` works like Java's `public`: every file is private by default. `statusLabels` is exported once from `MachineCard.tsx` and imported by the detail page, so a label changes in one place.
+- *Interview:* "Cards use next/link for client-side navigation with prefetching, and shared status labels live in one exported map."
+
+### Security patch in its own pull request
+- `pnpm add next@16.4.6 eslint-config-next@16.4.6` upgrades to exact versions and updates the lock file.
+- One change per PR: the upgrade got its own branch (`chore/...`), so it's easy to review and easy to undo.
+- *Interview:* "Dependency upgrades go in their own PR, so CI checks them in isolation and they're easy to roll back."
+
+### Adding a column safely
+- `serialNumber: text("serial_number")` with no `.notNull()` makes an optional column; the page shows "Not set" with `machine.serialNumber ?? "Not set"`.
+- `pnpm db:generate` wrote the step (`ALTER TABLE "machines" ADD COLUMN "serial_number" text;`); `pnpm db:migrate` ran it.
+- Database first, then code: Neon got the new column before the new code went live. An optional column is safe for the old code, which simply ignores it.
+- Fake serials (`DEMO-SN-01` ...) are obviously fake, so they're never mistaken for real ones.
+- *Interview:* "I apply additive migrations to the database before deploying the code that uses them, so every deploy is safe to roll out."

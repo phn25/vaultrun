@@ -1,3 +1,5 @@
+import NextLink from "next/link";
+
 import type { Machine, MachineStatus } from "@/db/schema";
 
 const statusStyles: Record<MachineStatus, string> = {
@@ -6,7 +8,7 @@ const statusStyles: Record<MachineStatus, string> = {
   offline: "bg-red-100 text-red-800",
 };
 
-const statusLabels: Record<MachineStatus, string> = {
+export const statusLabels: Record<MachineStatus, string> = {
   active: "Active",
   "needs-service": "Needs service",
   offline: "Offline",
@@ -14,7 +16,10 @@ const statusLabels: Record<MachineStatus, string> = {
 
 export function MachineCard({ machine }: { machine: Machine }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 text-gray-900 shadow-sm">
+    <NextLink
+      href={`/machines/${machine.id}`}
+      className="block rounded-lg border border-gray-200 bg-white p-4 text-gray-900 shadow-sm hover:border-gray-400"
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{machine.name}</h2>
         <span className={`rounded-full px-2 py-1 text-xs font-medium ${statusStyles[machine.status]}`}>
@@ -27,6 +32,6 @@ export function MachineCard({ machine }: { machine: Machine }) {
       <p className="mt-3 text-sm">
         Target float: <span className="font-medium">${machine.targetFloat.toLocaleString()}</span>
       </p>
-    </div>
+    </NextLink>
   );
 }

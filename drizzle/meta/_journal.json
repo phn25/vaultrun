@@ -15,6 +15,13 @@
       "when": 1795558723244,
       "tag": "0001_faithful_lifeguard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795563335596,
+      "tag": "0002_tiny_mad_thinker",
+      "breakpoints": true
     }
   ]
 }

@@ -325,3 +325,30 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 
 ### Database first, again
 - Neon got the new table and fake rows (` DATABASE_URL="..." pnpm db:migrate` / `db:seed`) before the code that reads them was merged, so the live demo never asked for a missing table.
+
+---
+
+## 2026-11-25 · Sprint 3: runs and the cash ledger
+
+### Append-only ledger
+- Every money move is one row in `cash_moves`: from (home / bank / run / machine), to, amount. Rows are never edited or deleted; a mistake is fixed by a new row with a note, like a checkbook.
+- Balances (at home, in the bag) are sums of moves, never typed in, so they can't drift from the history.
+- *Interview:* "Cash is an append-only ledger: balances are computed from moves, and corrections are new entries with a reason."
+
+### The runs table
+- One row per day out (a bank-only day counts too): date, start and end odometer, counted leftover, a note when the count differs, and a `run_status` enum (in-progress / finished).
+- End odometer and the count are optional columns, filled in at finish. Miles aren't stored: end − start can always be worked out.
+- Cash taken from home is not a column on the run; it's a home → run row in the ledger, so money lives in one place.
+- *Interview:* "I don't store values I can compute, like miles from two odometer readings, so they can never disagree."
+
+### Check constraint
+- `check("amount_positive", sql\`${table.amount} > 0\`)` makes Postgres refuse a zero or negative amount, even if the app has a bug. The direction (from → to) carries the sign.
+- *Interview:* "Key money rules live in the database as constraints, so bad data is refused at the source, not just in the UI."
+
+### Optional foreign key
+- `runId` and `machineId` reference real rows but have no `.notNull()`: blank is allowed (a move outside a run), a wrong id is not.
+
+### Why the migration SQL is committed
+- `pnpm db:generate` reads `schema.ts` and writes a new SQL file, once. `pnpm db:migrate` runs the committed SQL files a database hasn't had yet; each database keeps a list of the ones it has run.
+- So the PC, the Mac, Neon and later AWS all get the exact same changes in the same order.
+- *Interview:* "Migrations are committed SQL files, so every environment gets the same changes in the same order."

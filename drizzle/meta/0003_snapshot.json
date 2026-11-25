@@ -1,0 +1,228 @@
+{
+  "id": "e0ac173b-4142-46d2-a70c-688b00003f04",
+  "prevId": "6ddae798-4a09-4ffc-a7f1-66e8448c729d",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.daily_transactions": {
+      "name": "daily_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "machine_id": {
+          "name": "machine_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "withdrawal_count": {
+          "name": "withdrawal_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "withdrawal_amount": {
+          "name": "withdrawal_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surcharge_revenue": {
+          "name": "surcharge_revenue",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "daily_transactions_machine_id_machines_id_fk": {
+          "name": "daily_transactions_machine_id_machines_id_fk",
+          "tableFrom": "daily_transactions",
+          "tableTo": "machines",
+          "columnsFrom": [
+            "machine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.machines": {
+      "name": "machines",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "area": {
+          "name": "area",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "serial_number": {
+          "name": "serial_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "machine_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "target_float": {
+          "name": "target_float",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.runs": {
+      "name": "runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_odometer": {
+          "name": "start_odometer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_odometer": {
+          "name": "end_odometer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "counted_leftover": {
+          "name": "counted_leftover",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "difference_note": {
+          "name": "difference_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "run_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'in-progress'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.run_status": {
+      "name": "run_status",
+      "schema": "public",
+      "values": [
+        "in-progress",
+        "finished"
+      ]
+    },
+    "public.machine_status": {
+      "name": "machine_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "needs-service",
+        "offline"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

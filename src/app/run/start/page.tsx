@@ -1,9 +1,11 @@
+import { startRun } from "../actions";
+
 export default function StartTodayPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-4 text-gray-900 sm:p-8">
       <h1 className="text-2xl font-bold">Start today</h1>
 
-      <form className="mt-6 flex max-w-sm flex-col gap-4">
+      <form action={startRun} className="mt-6 flex max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
           <span className="text-sm font-medium">Starting odometer</span>
           <input

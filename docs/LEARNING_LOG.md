@@ -290,3 +290,38 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - Database first, then code: Neon got the new column before the new code went live. An optional column is safe for the old code, which simply ignores it.
 - Fake serials (`DEMO-SN-01` ...) are obviously fake, so they're never mistaken for real ones.
 - *Interview:* "I apply additive migrations to the database before deploying the code that uses them, so every deploy is safe to roll out."
+
+---
+
+## 2026-11-24 (evening) · Sprint 2 catch-up: withdrawal history
+
+### Why a withdrawals table
+- One row per machine per day: how many withdrawals, dollars taken out, and fee revenue. In the real app it is filled by uploading the processor's report, never typed by hand.
+- It is the history the forecast (how much to load) and the cash checks (last load minus withdrawals) are built on.
+- *Interview:* "Daily transaction history per machine is the raw material for both the cash forecast and the balance checks."
+
+### Foreign key
+- `machineId: text("machine_id").notNull().references(() => machines.id)` means every row must point at a real machine; Postgres refuses `"m99"`.
+- The migration Drizzle wrote ends with `FOREIGN KEY ("machine_id") REFERENCES "machines"("id")`.
+- Delete order matters: the seed deletes `daily_transactions` before `machines`, because rows that point at a machine block deleting it.
+- *Interview:* "Withdrawals reference machines through a foreign key, so the database enforces integrity, not just the app."
+
+### Two names, one table
+- `"daily_transactions"` is the table's name inside Postgres; `dailyTransactions` is the exported const my code uses (`db.insert(dailyTransactions)`, `.from(dailyTransactions)`). Like a JPA `@Entity` class mapped to a table.
+
+### Fake history in the seed
+- `fakeDailyTransactions()` builds 182 days × 14 machines = 2548 rows, busier on Fridays and Saturdays, with a fake $3 fee per withdrawal.
+- *Interview:* "The seed generates six months of realistic fake withdrawals, so the public demo never needs real cash data."
+
+### GROUP BY
+- `date_trunc('week', date)` turns each day into the Monday of its week; `GROUP BY` that week with `sum(withdrawal_amount)` squashes 182 daily rows into about 26 weekly totals.
+- The database does the adding up, so the page only receives about 26 numbers.
+- *Interview:* "The database does the aggregation with GROUP BY, so the page only receives weekly totals instead of every daily row."
+
+### A chart made of plain boxes
+- Each bar is a `div` in a fixed-height box; its height is `this week ÷ the biggest week × 100%`, so the biggest week fills the box and the others are drawn relative to it.
+- No chart library, nothing extra to download, and it stays a server component.
+- *Interview:* "For one simple bar chart I used plain divs sized as a percentage of the max, instead of pulling in a chart library."
+
+### Database first, again
+- Neon got the new table and fake rows (` DATABASE_URL="..." pnpm db:migrate` / `db:seed`) before the code that reads them was merged, so the live demo never asked for a missing table.

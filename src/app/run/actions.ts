@@ -70,3 +70,29 @@ export async function withdrawFromBank(formData: FormData) {
 
   revalidatePath(`/run/${runId}`); // show the new totals right away
 }
+
+// Runs on the server when Riley saves a load at a machine (vaulting stop)
+export async function loadMachine(formData: FormData) {
+  const runId = Number(formData.get("runId")); // from the hidden box
+  const machineId = String(formData.get("machineId") ?? ""); // "m03"
+  const amount = Number(formData.get("amount")); // what she ACTUALLY put in
+
+  // Never trust the browser: check again here
+  if (!Number.isInteger(runId) || machineId === "") {
+    throw new Error("Missing run or machine");
+  }
+  if (!Number.isInteger(amount) || amount <= 0) {
+    throw new Error("Amount must be whole dollars, more than $0");
+  }
+
+  // One new row: money moves from the bag into the machine
+  await db.insert(cashMoves).values({
+    fromPlace: "run",
+    toPlace: "machine",
+    amount,
+    runId,
+    machineId,
+  });
+
+  revalidatePath(`/run/${runId}`); // show the new totals right away
+}

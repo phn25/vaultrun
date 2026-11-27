@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { dailyTransactions, machines } from "./schema";
+import { bankAccounts, cashMoves, dailyTransactions, machines, runs } from "./schema";
 
 // The 14 fake machines (moved here from src/data/machines.ts)
 const fakeMachines: (typeof machines.$inferInsert)[] = [
@@ -17,6 +17,13 @@ const fakeMachines: (typeof machines.$inferInsert)[] = [
   { id: "m12", name: "Machine 12", area: "South", model: "Genmega G2500", serialNumber: "DEMO-SN-12", status: "active", targetFloat: 8000 },
   { id: "m13", name: "Machine 13", area: "South", model: "Hyosung Halo II", serialNumber: "DEMO-SN-13", status: "active", targetFloat: 8000 },
   { id: "m14", name: "Machine 14", area: "South", model: "Genmega G2500", serialNumber: "DEMO-SN-14", status: "active", targetFloat: 8000 },
+];
+
+// Fake bank accounts: one main account (Riley withdraws from it) + two others
+const fakeBankAccounts: (typeof bankAccounts.$inferInsert)[] = [
+  { bankName: "Demo Bank", nickname: "Main account", last4: "0001", isMain: true },
+  { bankName: "Demo Bank", nickname: "North machines", last4: "0002" },
+  { bankName: "Demo Bank", nickname: "South machines", last4: "0003" },
 ];
 
 // 6 months of fake daily withdrawals for every machine (busier on Fri and Sat)
@@ -48,9 +55,15 @@ function fakeDailyTransactions() {
 
 // Fake data only. Real names, locations and cash never go in this repo.
 async function main() {
-  // Delete children first: a transaction row points at a machine (foreign key)
+  // Delete children first: a row that points at another table goes before it (foreign key)
+  await db.delete(cashMoves); // points at runs, machines and bank accounts
+  await db.delete(runs); // also clears test runs typed on the demo
   await db.delete(dailyTransactions);
   await db.delete(machines); // start clean so the seed can be re-run
+  await db.delete(bankAccounts);
+
+  await db.insert(bankAccounts).values(fakeBankAccounts);
+  console.log(`Seeded ${fakeBankAccounts.length} bank accounts`);
 
   await db.insert(machines).values(fakeMachines);
   console.log(`Seeded ${fakeMachines.length} machines`);

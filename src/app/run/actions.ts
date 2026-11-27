@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { db } from "@/db";
@@ -42,4 +43,30 @@ export async function startRun(formData: FormData) {
   });
 
   redirect(`/run/${runId}`); // go to the new run's page
+}
+
+// Runs on the server when Riley saves a bank withdrawal on the run page
+export async function withdrawFromBank(formData: FormData) {
+  const runId = Number(formData.get("runId")); // from the hidden box
+  const bankAccountId = Number(formData.get("bankAccountId"));
+  const amount = Number(formData.get("amount"));
+
+  // Never trust the browser: check again here
+  if (!Number.isInteger(runId) || !Number.isInteger(bankAccountId)) {
+    throw new Error("Missing run or bank account");
+  }
+  if (!Number.isInteger(amount) || amount <= 0) {
+    throw new Error("Amount must be whole dollars, more than $0");
+  }
+
+  // One new row: money moves from the bank into the bag
+  await db.insert(cashMoves).values({
+    fromPlace: "bank",
+    toPlace: "run",
+    amount,
+    runId,
+    bankAccountId,
+  });
+
+  revalidatePath(`/run/${runId}`); // show the new totals right away
 }

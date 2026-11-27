@@ -352,3 +352,66 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - `pnpm db:generate` reads `schema.ts` and writes a new SQL file, once. `pnpm db:migrate` runs the committed SQL files a database hasn't had yet; each database keeps a list of the ones it has run.
 - So the PC, the Mac, Neon and later AWS all get the exact same changes in the same order.
 - *Interview:* "Migrations are committed SQL files, so every environment gets the same changes in the same order."
+
+---
+
+## 2026-11-25 · Week 5 Session 2: Start today screen
+
+### Form validation in the browser
+- `type="number"` + `inputMode="numeric"` gives a number keypad on a phone. `required`, `min={0}` and `step={1}` make the browser refuse empty, negative or decimal values before anything is sent.
+- Each box's `name` (`startOdometer`, `cashFromHome`) is how the server reads it.
+- In JSX, `{0}` means "a JavaScript value", here the number 0.
+
+### Server action
+- A function in a file that starts with `"use server"` runs only on the server. The form calls it with `action={startRun}` and the boxes arrive as `FormData` (`formData.get("startOdometer")`).
+- The browser only gets a handle to call it, not the code, so the database password never reaches the phone.
+- The server checks the numbers again (`Number.isInteger`, not negative), because browser checks can be skipped.
+- *Interview:* "Forms post to a server action that validates input on the server and writes to the database; there's no separate API route to maintain."
+
+### Transaction
+- `db.transaction(async (tx) => { ... })` saves the `runs` row and the home → run `cash_moves` row together: if one fails, both are undone. Like a bank transfer, money never leaves without arriving.
+- `.returning({ id: runs.id })` gets the new run's id back from Postgres in the same insert.
+- $0 from home writes no cash row (the database's `amount_positive` check would refuse it, and a $0 move isn't a move).
+- *Interview:* "Starting a run writes two rows in one transaction, so a run never exists without its starting cash."
+
+### Redirect
+- `redirect("/run/1")` sends the browser to the new run's page after saving. It works by throwing, so it goes after the transaction, not inside a try/catch.
+
+### Dates and time zones
+- Vercel's clock runs on UTC, where it's already tomorrow after 7 PM Eastern. `toLocaleDateString("en-CA", { timeZone: "America/New_York" })` gives today's date as `2026-11-25` in Riley's time zone.
+
+### Balance from the ledger
+- `/run/[id]` adds up the run's cash moves: into the run = plus, out of the run = minus. "In the bag" is never stored, so it can't drift from the history.
+- *Interview:* "Cash on hand is derived from an append-only ledger, not stored in a balance column."
+
+### No migration this time
+- The code only used tables Neon already had, so there was no database-first step before merging.
+
+---
+
+## 2026-11-26 · Week 6 Session 1: bank stop
+
+### Bank accounts table
+- `bank_accounts` holds Riley's accounts: bank name, nickname, last 4 digits and `is_main`. Only the last 4 digits are stored, never the full number: enough to recognize the account, nothing useful if it leaks.
+- `is_main` is a **boolean column** (true or false only). It marks the account she withdraws from (in real life her surcharge account, where the fees land and where she moves the machine accounts' money). It's set once and rarely changes; it only decides which account is picked by default.
+- `cash_moves.bank_account_id` is an optional foreign key: filled for bank → run moves, blank for everything else.
+- *Interview:* "I store only the last four digits of bank accounts and link each ledger row to its source account with an optional foreign key."
+
+### Seed order and await
+- The seed resets the database to the same fake starting point, so it can be run again and again (idempotent).
+- Tables are cleared children first: `cash_moves` → `runs` → `daily_transactions` → `machines` → `bank_accounts`. A row that points at another table must go before the row it points at, or Postgres refuses.
+- `await` makes each database call finish before the next line starts, so the order really holds.
+- Re-seeding the demo also clears test runs strangers typed (the demo is writable until login in Sprint 10).
+- *Interview:* "My seed clears tables in foreign-key order and reloads the same fake data, so the demo can be reset safely."
+
+### Hidden input
+- A hidden input (`type="hidden" name="runId"`) is a form box the user never sees. It sends the run's id with the form, so the server action knows which run the withdrawal belongs to.
+- The server still checks it (`Number.isInteger`), since anything from the browser can be changed.
+
+### revalidatePath
+- After saving, `revalidatePath("/run/7")` tells Next.js that page's data changed, so it draws it again with the new totals. No manual refresh.
+- After a form action succeeds, React clears the form's boxes, ready for the next entry.
+- *Interview:* "The server action writes one ledger row and revalidates the page, so the new balance shows immediately."
+
+### Database first, again
+- New table + column = migration 0005. Neon got `pnpm db:migrate` + `pnpm db:seed` before merging, so the live site never asks for a column that doesn't exist yet.

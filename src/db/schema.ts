@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, date, integer, pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, check, date, integer, pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 // Fixed list for app-defined states (enum = only these values allowed)
 export const statusEnum = pgEnum("machine_status", ["active", "needs-service", "offline"]);
@@ -48,6 +48,18 @@ export const runs = pgTable("runs", {
 
 export type Run = typeof runs.$inferSelect;
 
+// Riley's bank accounts. Last 4 digits only, never the full number.
+export const bankAccounts = pgTable("bank_accounts", {
+  id: serial("id").primaryKey(),
+  bankName: text("bank_name").notNull(), // "Demo Bank"
+  nickname: text("nickname").notNull(), // "Main account"
+  last4: text("last4").notNull(), // "0001"
+  isMain: boolean("is_main").notNull().default(false), // the one she withdraws from
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type BankAccount = typeof bankAccounts.$inferSelect;
+
 // The four places cash can be
 export const cashPlaceEnum = pgEnum("cash_place", ["home", "bank", "run", "machine"]);
 
@@ -62,6 +74,7 @@ export const cashMoves = pgTable(
     amount: integer("amount").notNull(), // whole dollars, always more than 0
     runId: integer("run_id").references(() => runs.id), // optional: blank when not part of a run
     machineId: text("machine_id").references(() => machines.id), // optional: set when cash goes in or out of a machine
+    bankAccountId: integer("bank_account_id").references(() => bankAccounts.id), // optional: set when cash comes from a bank
     note: text("note"), // required by the app for corrections and count differences
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

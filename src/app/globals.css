@@ -19,7 +19,7 @@
   --warn: #f5b942; /* needs service */
   --bad: #f26a5b; /* offline */
   --route: #3cc487; /* route line and links */
-  --wordmark: var(--font-overpass); /* font for the VaultRun name */
+  --wordmark: var(--font-big-shoulders-stencil); /* font for the VaultRun name */
 }
 
 /* Vault brass: dark bronze + brushed brass */
@@ -36,6 +36,22 @@
   --bad: #ef6a5e;
   --route: #6cc0ae;
   --wordmark: var(--font-dm-serif);
+}
+
+/* Blue hour: the deep indigo sky before sunrise + one pale first-light button */
+[data-theme="impeccable"] {
+  --page: #0d1120; /* blue-hour sky, not black, so text doesn't smear on a dark phone */
+  --panel: #161c2e;
+  --edge: #323b5c; /* a little stronger than usual, so boxes still show in sun */
+  --ink: #f5f1e8; /* warm paper white, 15:1 on panels */
+  --dim: #a7aec4;
+  --go: #86d6ff; /* first light on the horizon: the one lit control */
+  --go-ink: #071729;
+  --ok: #56d89c;
+  --warn: #f6c84c;
+  --bad: #ff7b6b;
+  --route: #b8a8ff; /* dawn lilac for routes and links, apart from the button */
+  --wordmark: var(--font-big-shoulders-stencil); /* stencil, like a cash bag or transit crate */
 }
 
 /* Turn the tokens into Tailwind classes: bg-page, text-ink, border-edge, font-num… */

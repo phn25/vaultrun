@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible, Barlow_Semi_Condensed, DM_Serif_Display, Overpass } from "next/font/google";
+import {
+  Atkinson_Hyperlegible,
+  Barlow_Semi_Condensed,
+  Big_Shoulders_Stencil,
+  DM_Serif_Display,
+  Overpass,
+} from "next/font/google";
 import "./globals.css";
 
 // next/font downloads each font at build time and serves it from our own site
@@ -27,6 +33,12 @@ const dmSerif = DM_Serif_Display({
   weight: "400",
 });
 
+const bigShouldersStencil = Big_Shoulders_Stencil({
+  variable: "--font-big-shoulders-stencil",
+  subsets: ["latin"],
+  weight: "800",
+});
+
 export const metadata: Metadata = {
   title: "VaultRun",
   description: "Cash runs for a small ATM business",
@@ -37,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-theme="interstate"
-      className={`${atkinson.variable} ${barlow.variable} ${overpass.variable} ${dmSerif.variable} h-full antialiased`}
+      className={`${atkinson.variable} ${barlow.variable} ${overpass.variable} ${dmSerif.variable} ${bigShouldersStencil.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

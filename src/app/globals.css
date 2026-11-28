@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Design tokens: every color and font the app uses, named once.
+  To switch the whole look, change data-theme on <html> in src/app/layout.tsx.
+*/
+
+/* Interstate: asphalt gray + highway-sign green (the default) */
+:root,
+[data-theme="interstate"] {
+  --page: #121619; /* screen background */
+  --panel: #1b2125; /* boxes on top of the background */
+  --edge: #2c363c; /* thin borders */
+  --ink: #edf2ef; /* main text */
+  --dim: #98a6a0; /* labels and small print */
+  --go: #0f7a4c; /* the one main button */
+  --go-ink: #ffffff; /* text on the main button */
+  --ok: #45cf8e; /* running */
+  --warn: #f5b942; /* needs service */
+  --bad: #f26a5b; /* offline */
+  --route: #3cc487; /* route line and links */
+  --wordmark: var(--font-big-shoulders-stencil); /* font for the VaultRun name */
 }
 
+/* Vault brass: dark bronze + brushed brass */
+[data-theme="brass"] {
+  --page: #15120e;
+  --panel: #211c16;
+  --edge: #372e24;
+  --ink: #f3ebdd;
+  --dim: #b1a38e;
+  --go: #d9a54e;
+  --go-ink: #1c150c;
+  --ok: #7dcb92;
+  --warn: #f59a4a;
+  --bad: #ef6a5e;
+  --route: #6cc0ae;
+  --wordmark: var(--font-dm-serif);
+}
+
+/* Blue hour: the deep indigo sky before sunrise + one pale first-light button */
+[data-theme="impeccable"] {
+  --page: #0d1120; /* blue-hour sky, not black, so text doesn't smear on a dark phone */
+  --panel: #161c2e;
+  --edge: #323b5c; /* a little stronger than usual, so boxes still show in sun */
+  --ink: #f5f1e8; /* warm paper white, 15:1 on panels */
+  --dim: #a7aec4;
+  --go: #86d6ff; /* first light on the horizon: the one lit control */
+  --go-ink: #071729;
+  --ok: #56d89c;
+  --warn: #f6c84c;
+  --bad: #ff7b6b;
+  --route: #b8a8ff; /* dawn lilac for routes and links, apart from the button */
+  --wordmark: var(--font-big-shoulders-stencil); /* stencil, like a cash bag or transit crate */
+}
+
+/* Turn the tokens into Tailwind classes: bg-page, text-ink, border-edge, font-num… */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-page: var(--page);
+  --color-panel: var(--panel);
+  --color-edge: var(--edge);
+  --color-ink: var(--ink);
+  --color-dim: var(--dim);
+  --color-go: var(--go);
+  --color-go-ink: var(--go-ink);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-route: var(--route);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-atkinson); /* everyday text: built to be easy to read */
+  --font-num: var(--font-barlow); /* big numbers: narrow, so dollars fit on a phone */
+  --font-wordmark: var(--wordmark); /* the VaultRun name */
 }

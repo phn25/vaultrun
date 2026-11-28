@@ -457,3 +457,31 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 - The "in the bag" sum moved into one shared function, `cashInBag` (`src/app/run/bag.ts`), since the run page, the finish page and the server action all need it.
 - A finished run only shows a summary (miles, loaded, from bank, took home, note) with no forms.
 - *Interview:* "Finishing a run previews the cash check from URL params, then one transaction closes the run and moves the counted cash home, with a note required when the count is off."
+
+---
+
+## 2026-11-27 · Sprint 3 Session 5: the look and the home dashboard
+
+### Design tokens
+- A design token is a named value, like `--go` for "main button color" or `--wordmark` for "font of the VaultRun name". Pages use the name, never a color code.
+- All tokens live in `src/app/globals.css`, one block per theme: `[data-theme="interstate"]` (default), `[data-theme="brass"]`, `[data-theme="impeccable"]`. Every block sets the same token names.
+- `@theme inline` turns each token into a Tailwind class: `--color-panel: var(--panel)` gives `bg-panel`, `border-panel`, `text-panel`.
+- The switch is one attribute on `<html>` in `layout.tsx`: `data-theme="interstate"`. Change one word and every color and the name font change.
+- Mixing is a one-line change too: Interstate colors + Impeccable's stencil name font = swap one `--wordmark` line.
+- *Interview:* "Colors and fonts are design tokens in one CSS file, mapped to Tailwind classes, so the app can switch themes with a single attribute."
+
+### next/font
+- `next/font/google` downloads Google fonts at build time and serves them from our own site: faster, no layout jump, no request to Google from the visitor.
+- Each font gets a CSS variable (`variable: "--font-atkinson"`) that the tokens point at. Fonts: Atkinson Hyperlegible (sentences), Barlow Semi Condensed (numbers and headings), Big Shoulders Stencil (the VaultRun name).
+- When the page looks stale after a font or CSS change: stop `pnpm dev`, `rm -rf .next` (Next.js's build cache, never in Git), start again.
+
+### Home dashboard
+- `src/app/page.tsx` is an async Server Component (+ its own `loading.tsx`): greeting by New York time, miles today and this year from finished runs (end − start odometer), Running / Need service / Offline counts, machines grouped by area with `Map.groupBy`, and a Start today button pinned to the bottom.
+- Small helper components (`Stat`, `MachineRow`) keep the page short. No color codes in the page, only token classes.
+- No name in the greeting: the repo and demo are public; the name comes with login.
+
+### Impeccable (design skill for Claude Code)
+- A skill = written design rules + checks that Claude Code follows when you type `/impeccable <command>`. Installed per project with `npx impeccable install` (telemetry off, design hook on).
+- Claude Code runs in the Ubuntu terminal (`claude`), right next to the code.
+- `init` wrote `PRODUCT.md` (who Riley is, where she uses the app, hard rules). It then invented its own color scheme from `PRODUCT.md` only, so it wasn't copying ours; it was compared side by side with the two finalists. `document` wrote `DESIGN.md` ("The Highway Sign": the rules of the chosen look). `critique` scored the home screen 20/40 and ranked fixes (run state on home, problem machines first, tap feedback).
+- *Interview:* "I used the Impeccable design skill with Claude Code to generate an alternative theme, compared three options on the real screen, recorded the winner as a design system, and got a heuristic review to plan the next fixes."

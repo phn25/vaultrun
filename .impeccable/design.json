@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-28T03:25:20+00:00",
+  "title": "Design System: VaultRun",
+  "extensions": {
+    "colorMeta": {
+      "asphalt": {
+        "role": "neutral",
+        "displayName": "Asphalt",
+        "cssVar": "--page",
+        "tonalRamp": [
+          "#090b0d",
+          "#232528",
+          "#3f4345",
+          "#5d6265",
+          "#7e8387",
+          "#a1a6a9",
+          "#c6cacd",
+          "#eceff1"
+        ]
+      },
+      "shoulder": {
+        "role": "neutral",
+        "displayName": "Shoulder",
+        "cssVar": "--panel",
+        "tonalRamp": [
+          "#090c0e",
+          "#222629",
+          "#3d4346",
+          "#5c6267",
+          "#7c8388",
+          "#a0a6aa",
+          "#c4cace",
+          "#ebeff2"
+        ]
+      },
+      "lane-line": {
+        "role": "neutral",
+        "displayName": "Lane Line",
+        "cssVar": "--edge",
+        "tonalRamp": [
+          "#070c0f",
+          "#20262a",
+          "#3b4348",
+          "#596369",
+          "#79848b",
+          "#9da7ad",
+          "#c2cbd0",
+          "#e9f0f4"
+        ]
+      },
+      "sign-white": {
+        "role": "neutral",
+        "displayName": "Sign White",
+        "cssVar": "--ink",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#232624",
+          "#404341",
+          "#5e6260",
+          "#7f8381",
+          "#a2a6a4",
+          "#c7cac8",
+          "#ecefed"
+        ]
+      },
+      "weathered-sage": {
+        "role": "neutral",
+        "displayName": "Weathered Sage",
+        "cssVar": "--dim",
+        "tonalRamp": [
+          "#070d0a",
+          "#1f2724",
+          "#3b4540",
+          "#58645f",
+          "#798680",
+          "#9da8a3",
+          "#c2ccc7",
+          "#e8f1ed"
+        ]
+      },
+      "highway-green": {
+        "role": "primary",
+        "displayName": "Highway Green",
+        "cssVar": "--go",
+        "tonalRamp": [
+          "#001202",
+          "#003015",
+          "#00502e",
+          "#147348",
+          "#409669",
+          "#70b78e",
+          "#9dd9b5",
+          "#cbfdde"
+        ]
+      },
+      "on-green": {
+        "role": "primary",
+        "displayName": "On Green",
+        "cssVar": "--go-ink",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "running-green": {
+        "role": "tertiary",
+        "displayName": "Running Green",
+        "cssVar": "--ok",
+        "tonalRamp": [
+          "#001400",
+          "#003310",
+          "#005428",
+          "#007841",
+          "#009b62",
+          "#56bc88",
+          "#8bdeb0",
+          "#bdffda"
+        ]
+      },
+      "caution-amber": {
+        "role": "tertiary",
+        "displayName": "Caution Amber",
+        "cssVar": "--warn",
+        "tonalRamp": [
+          "#1c0400",
+          "#3d1c00",
+          "#613700",
+          "#885500",
+          "#ac7700",
+          "#cb9c43",
+          "#ebc27b",
+          "#ffe9af"
+        ]
+      },
+      "stop-red": {
+        "role": "tertiary",
+        "displayName": "Stop Red",
+        "cssVar": "--bad",
+        "tonalRamp": [
+          "#280000",
+          "#500000",
+          "#7b130f",
+          "#a92f26",
+          "#d15548",
+          "#ef8072",
+          "#ffab9d",
+          "#ffd7ca"
+        ]
+      },
+      "route-green": {
+        "role": "secondary",
+        "displayName": "Route Green",
+        "cssVar": "--route",
+        "tonalRamp": [
+          "#001401",
+          "#003211",
+          "#00542a",
+          "#007844",
+          "#049b64",
+          "#59bc8a",
+          "#8ddeb2",
+          "#bfffdb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "The VaultRun name only."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "The screen's one greeting or title."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings and the big machine number in a row."
+      },
+      "number": {
+        "displayName": "Number",
+        "purpose": "Stat values and the main button label."
+      },
+      "amount": {
+        "displayName": "Amount",
+        "purpose": "Dollar amounts in lists."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Group headings such as an area name."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sentences and row text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "The small word under a number, in Weathered Sage."
+      }
+    },
+    "themes": [
+      {
+        "name": "interstate",
+        "status": "standard (default)"
+      },
+      {
+        "name": "brass",
+        "status": "supported alternate"
+      },
+      {
+        "name": "impeccable",
+        "status": "supported alternate"
+      }
+    ],
+    "shadows": [],
+    "motion": [
+      {
+        "name": "state-change",
+        "value": "150ms ease-out",
+        "purpose": "Hover/press feedback in component snippets; no motion is shipped yet."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action per screen, full width, fixed at the bottom.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Start today</a>",
+      "css": ".ds-btn-primary{display:block;background:var(--go);color:var(--go-ink);border-radius:16px;padding:16px;text-align:center;font-family:var(--font-barlow),'Arial Narrow',sans-serif;font-size:1.5rem;line-height:2rem;font-weight:700;text-decoration:none;transition:filter .15s ease-out}.ds-btn-primary:hover{filter:brightness(1.1)}.ds-btn-primary:active{filter:brightness(.92)}.ds-btn-primary:focus-visible{outline:3px solid var(--route);outline-offset:3px}"
+    },
+    {
+      "name": "Stat Strip",
+      "kind": "card",
+      "refersTo": "stat-strip",
+      "description": "Equal cells of number over plain-language label; status variant colors the number.",
+      "html": "<div class=\"ds-stats\"><div class=\"ds-stat\"><p class=\"ds-stat-v ds-ok\">11</p><p class=\"ds-stat-l\">Running</p></div><div class=\"ds-stat\"><p class=\"ds-stat-v ds-warn\">2</p><p class=\"ds-stat-l\">Need service</p></div><div class=\"ds-stat\"><p class=\"ds-stat-v ds-bad\">1</p><p class=\"ds-stat-l\">Offline</p></div></div>",
+      "css": ".ds-stats{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel);border:1px solid var(--edge);border-radius:12px;color:var(--ink)}.ds-stat{padding:8px 12px}.ds-stat+.ds-stat{border-left:1px solid var(--edge)}.ds-stat-v{margin:0;font-family:var(--font-barlow),'Arial Narrow',sans-serif;font-size:1.5rem;line-height:2rem;font-weight:700}.ds-stat-l{margin:0;font-family:var(--font-atkinson),system-ui,sans-serif;font-size:.875rem;line-height:1.25rem;color:var(--dim)}.ds-ok{color:var(--ok)}.ds-warn{color:var(--warn)}.ds-bad{color:var(--bad)}"
+    },
+    {
+      "name": "Area Panel with Machine Rows",
+      "kind": "custom",
+      "refersTo": "area-panel",
+      "description": "Signature list: machines grouped by area, each row a link with number, status and target.",
+      "html": "<div class=\"ds-area\"><div class=\"ds-area-h\"><h3>North</h3><span>2 machines</span></div><a class=\"ds-row\" href=\"#\"><span class=\"ds-num\">01</span><span><span class=\"ds-status\"><span class=\"ds-dot ds-dot-ok\"></span>Running</span><span class=\"ds-model\">Hyosung Halo II</span></span><span class=\"ds-amt\"><span>$6,000</span><small>target</small></span></a><a class=\"ds-row\" href=\"#\"><span class=\"ds-num\">02</span><span><span class=\"ds-status\"><span class=\"ds-dot ds-dot-warn\"></span>Needs service</span><span class=\"ds-model\">Genmega G2500</span></span><span class=\"ds-amt\"><span>$4,000</span><small>target</small></span></a></div>",
+      "css": ".ds-area{overflow:hidden;background:var(--panel);border:1px solid var(--edge);border-radius:12px;color:var(--ink);font-family:var(--font-atkinson),system-ui,sans-serif}.ds-area-h{display:flex;align-items:baseline;justify-content:space-between;padding:12px 16px}.ds-area-h h3{margin:0;font-size:1rem;font-weight:700}.ds-area-h span{font-size:.875rem;color:var(--dim)}.ds-row{display:grid;grid-template-columns:3rem 1fr auto;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--edge);color:inherit;text-decoration:none;transition:background .15s ease-out}.ds-row:hover{background:color-mix(in srgb,var(--edge) 40%,var(--panel))}.ds-row:focus-visible{outline:3px solid var(--route);outline-offset:-3px}.ds-num{font-family:var(--font-barlow),'Arial Narrow',sans-serif;font-size:1.875rem;font-weight:700}.ds-status{display:flex;align-items:center;gap:8px}.ds-dot{width:10px;height:10px;border-radius:9999px}.ds-dot-ok{background:var(--ok)}.ds-dot-warn{background:var(--warn)}.ds-dot-bad{background:var(--bad)}.ds-model{display:block;font-size:.875rem;color:var(--dim)}.ds-amt{text-align:right}.ds-amt span{display:block;font-family:var(--font-barlow),'Arial Narrow',sans-serif;font-size:1.25rem;font-weight:600}.ds-amt small{font-size:.75rem;color:var(--dim)}"
+    },
+    {
+      "name": "Wordmark",
+      "kind": "custom",
+      "refersTo": "wordmark",
+      "description": "The stenciled VaultRun name; the only decorative type.",
+      "html": "<p class=\"ds-wordmark\">VaultRun</p>",
+      "css": ".ds-wordmark{margin:0;font-family:var(--wordmark),var(--font-barlow),sans-serif;font-size:1.5rem;line-height:2rem;font-weight:800;color:var(--ink)}"
+    },
+    {
+      "name": "Amount Field",
+      "kind": "input",
+      "refersTo": "amount-field",
+      "description": "Target spec for the drift screens: empty dollar field, label above, Barlow digits.",
+      "html": "<label class=\"ds-field\"><span>Cash from home ($)</span><input type=\"number\" inputmode=\"numeric\" min=\"0\" step=\"1\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:4px;font-family:var(--font-atkinson),system-ui,sans-serif}.ds-field span{font-size:.875rem;color:var(--dim)}.ds-field input{min-height:48px;padding:12px;background:var(--panel);border:1px solid var(--edge);border-radius:12px;color:var(--ink);caret-color:var(--route);font-family:var(--font-barlow),'Arial Narrow',sans-serif;font-size:1.25rem;font-weight:600}.ds-field input:focus-visible{outline:3px solid var(--route);outline-offset:2px;border-color:var(--route)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Highway Sign",
+    "overview": "VaultRun looks like interstate signage: dark asphalt, white lettering, one green panel that tells you where to go. Signs are made to be read at a glance, at speed, in the dark and in glare, and that is how Riley reads her phone between stops and at the machine. Every screen answers one question with large condensed numbers and offers one lit action within thumb reach.\n\nThe system is dark by choice, not by fashion. Runs start before sunrise, so the ground is deep asphalt that doesn't glare in a dark car. Text is near-white at 14:1 or better so it holds up in sun. Color is spent on meaning: green is the action, and green, amber and red are machine status. Everything else is gray. Density is low: few items per screen, big type, generous rows.\n\nThe look switches through `data-theme` on `<html>`. **Interstate is the standard and the default.** `brass` (dark bronze, brushed brass, serif wordmark) and `impeccable` (blue-hour indigo, pale sky button) are supported alternates. They redefine the same token names, so any screen built on the tokens works in all three. The hex values in the frontmatter are interstate's.",
+    "keyCharacteristics": [
+      "Dark asphalt ground, near-white ink, one green action.",
+      "Condensed Barlow numerals for every number and heading; Atkinson Hyperlegible for every sentence.",
+      "A stenciled wordmark, the only decorative type, like the lettering on a cash bag.",
+      "Flat, bordered panels; no shadows.",
+      "Mobile-first single column, the main button fixed at the bottom."
+    ],
+    "rules": [
+      {
+        "name": "The One Green Panel Rule",
+        "body": "Each screen has at most one Highway Green surface: the main action. A second important action is bordered, not filled.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signal Rule",
+        "body": "Running Green, Caution Amber and Stop Red mean status only, and always come with a word (\"Running\", \"Need service\", \"Offline\"). Never color alone, never decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Token Rule",
+        "body": "Every color comes from a token in `src/app/globals.css`. No hex values or Tailwind palette colors (`gray-*`, `amber-*`, `green-*`) in components; they break all three themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Numbers Wear Barlow Rule",
+        "body": "Every number Riley reads (dollars, miles, counts, machine numbers) is set in Barlow; every sentence in Atkinson. Never set prose in Barlow or amounts in Atkinson.",
+        "section": "typography"
+      },
+      {
+        "name": "The Number Over Word Rule",
+        "body": "A stat is the number first, large, with a plain-language label under it in Label size (\"Driven today\", \"Need service\").",
+        "section": "typography"
+      },
+      {
+        "name": "The Thumb Rule",
+        "body": "The screen's main action lives in the bottom third, full width, at least 56px tall.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Road Rule",
+        "body": "Surfaces never lift. If something needs to stand out, give it Highway Green or more size, never a shadow or glow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use only the tokens (`bg-page`, `bg-panel`, `border-edge`, `text-ink`, `text-dim`, `bg-go`, `text-go-ink`, `ok`/`warn`/`bad`, `route`) so every screen works in interstate, brass and impeccable.",
+      "**Do** set every number in Barlow (`font-num`) and every sentence in Atkinson.",
+      "**Do** pair every status color with its word.",
+      "**Do** keep one Highway Green action per screen, full width, in thumb reach.",
+      "**Do** check new screens in all three themes before merging."
+    ],
+    "donts": [
+      "**Don't** use Tailwind palette colors (`bg-gray-50`, `bg-white`, `bg-amber-400`, `text-green-700`, `bg-blue-500`) or raw hex in components.",
+      "**Don't** add shadows, glows or glass. Depth is Shoulder on Asphalt plus a Lane Line.",
+      "**Don't** use the stencil wordmark font for anything but the VaultRun name.",
+      "**Don't** pre-fill a dollar amount in any field, even with an expected value.",
+      "**Don't** use Lane Line borders as the only way to show meaning; they fade in sunlight."
+    ]
+  }
+}

@@ -415,3 +415,45 @@ What I learned building VaultRun, one entry per step. Each entry: what we did, w
 
 ### Database first, again
 - New table + column = migration 0005. Neon got `pnpm db:migrate` + `pnpm db:seed` before merging, so the live site never asks for a column that doesn't exist yet.
+
+---
+
+## 2026-11-27 · Week 6 Session 2: vaulting stops and Finish run
+
+### searchParams (the URL remembers choices)
+- `searchParams` is the part of the address after `?`, like `/run/7?areas=South,North`. The page receives it as a Promise (`await searchParams`), the same way it receives `params`.
+- "Are you doing an ATM run today?" and the picked areas live in the URL, not the database: they are screen choices, not records. A refresh keeps them, and no migration was needed.
+- Each "+ area" button is just a link (`NextLink`) to the same page with one more area added to the end of the list, so the order she taps = her driving order.
+- `NextLink` = Next.js's `Link` component (imported under our own name). It swaps in only what changes instead of reloading the whole page.
+- *Interview:* "I kept temporary UI choices in the URL with searchParams, so they survive a refresh and need no database table."
+
+### inArray (WHERE … IN)
+- `inArray(machines.area, pickedAreas)` is Drizzle for `WHERE area IN ('South', 'North')`: one query for "machines in any of these areas".
+- The result is then sorted by each area's position in `pickedAreas`, so stops follow the driving order.
+- *Interview:* "I filtered with a single IN query instead of one query per area."
+
+### Vaulting stop = one ledger row
+- Save calls the server action `loadMachine`, which inserts one `cash_moves` row: `run → machine`, the amount she actually put in, with `machine_id`. Same pattern as the bank stop.
+- No new column: `cash_moves.machine_id` already existed since Nov 25. Code-only change, so no Neon step.
+- After Save, the stop shows "Loaded $X ✓" and the box disappears: cash entries are never edited; a wrong amount will be fixed with a new correction entry.
+
+### How the total redraws
+- "In the bag" is never stored. The page adds up the run's cash moves every time: into the run = +, out of the run = −.
+- Save → server action writes the row → `revalidatePath("/run/7")` marks that page out of date → Next.js runs the page's server code again (fresh query + sum) → React swaps in only what changed. No React state involved.
+- The path names which page to redraw; the `?areas=…` part isn't part of the path, so the picked areas stay.
+- Backticks (`` `/run/${runId}` ``) fill in the value; single quotes would not.
+
+### Map (lookup table)
+- `new Map<string, number>()` stores machine id → dollars loaded today: `set("m08", 6000)`, `get("m08")`, `has("m09")`.
+- Built once from the run's cash moves; each stop asks the Map whether it was loaded. Not the same as `list.map(...)`, which turns each item in a list into something else (like one box per machine).
+- *Interview:* "Totals are always derived from an append-only ledger, so the screen can't drift from what's saved."
+
+### Finish run: GET form + db.update
+- Finish is its own page, `/run/[id]/finish` (with its own `loading.tsx`).
+- Step 1 is a **GET form**: a form with no `action`. It saves nothing; it just puts the typed values in the address (`?end=1085&count=18000`), and the page reads them with `searchParams` to show the comparison. A preview before anything is saved.
+- The page compares the count with the expected bag (from the ledger). Same: green "Your count matches". Different: "You counted $X less/more than expected. Count again, or write a note saying why." and the note box is required. "Count again" is just a link back to the empty form.
+- "Save and finish" calls the server action `finishRun`, which re-checks everything on the server (odometer not below the start, note present when the count differs) and, in one transaction: **`db.update`** the run row (ending odometer, counted cash, note, status finished) + inserts a new run → home cash move for the counted cash.
+- Updating the run row is fine: F10 "never edit" is about cash entries. The money itself still only moves by new rows.
+- The "in the bag" sum moved into one shared function, `cashInBag` (`src/app/run/bag.ts`), since the run page, the finish page and the server action all need it.
+- A finished run only shows a summary (miles, loaded, from bank, took home, note) with no forms.
+- *Interview:* "Finishing a run previews the cash check from URL params, then one transaction closes the run and moves the counted cash home, with a note required when the count is off."

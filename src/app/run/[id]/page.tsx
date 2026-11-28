@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { bankAccounts, cashMoves, machines, runs } from "@/db/schema";
 
 import { loadMachine, withdrawFromBank } from "../actions";
+import { cashInBag } from "../bag";
 
 export default async function RunPage({
   params,
@@ -29,11 +30,7 @@ export default async function RunPage({
 
   // Cash in the bag = money moved into the run − money moved out of it
   const moves = await db.select().from(cashMoves).where(eq(cashMoves.runId, runId));
-  const inTheBag = moves.reduce((total, move) => {
-    if (move.toPlace === "run") return total + move.amount;
-    if (move.fromPlace === "run") return total - move.amount;
-    return total;
-  }, 0);
+  const inTheBag = cashInBag(moves);
 
   // Only the bank → run moves
   const fromBank = moves
@@ -72,6 +69,30 @@ export default async function RunPage({
   }
   const loaded = [...loadedByMachine.values()].reduce((total, amount) => total + amount, 0);
   const stopsDone = stops.filter((machine) => loadedByMachine.has(machine.id)).length;
+
+  // A finished run only shows its summary (no more forms)
+  if (run.status === "finished") {
+    const tookHome = moves
+      .filter((move) => move.fromPlace === "run" && move.toPlace === "home")
+      .reduce((total, move) => total + move.amount, 0);
+    return (
+      <main className="min-h-screen bg-gray-50 p-4 text-gray-900 sm:p-8">
+        <h1 className="text-2xl font-bold">Run complete</h1>
+        <p className="mt-1 text-sm text-gray-600">Run on {run.date}</p>
+        <dl className="mt-6 grid max-w-sm grid-cols-2 gap-y-2">
+          <dt className="text-gray-600">Miles</dt>
+          <dd className="text-right font-semibold">{(run.endOdometer ?? run.startOdometer) - run.startOdometer}</dd>
+          <dt className="text-gray-600">Loaded</dt>
+          <dd className="text-right font-semibold">${loaded.toLocaleString("en-US")}</dd>
+          <dt className="text-gray-600">From bank</dt>
+          <dd className="text-right font-semibold">${fromBank.toLocaleString("en-US")}</dd>
+          <dt className="text-gray-600">Took home</dt>
+          <dd className="text-right font-semibold">${tookHome.toLocaleString("en-US")}</dd>
+        </dl>
+        {run.differenceNote && <p className="mt-4 max-w-sm text-sm text-gray-600">Note: {run.differenceNote}</p>}
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 p-4 text-gray-900 sm:p-8">
@@ -145,13 +166,12 @@ export default async function RunPage({
               Yes
             </NextLink>
             <NextLink
-              href={`/run/${run.id}?atm=no`}
+              href={`/run/${run.id}/finish`}
               className="rounded-lg border border-gray-300 bg-white p-3 text-center text-lg font-semibold"
             >
               No, bank only
             </NextLink>
           </div>
-          {atm === "no" && <p className="mt-3 text-sm text-gray-600">Bank-only day. Finish run comes next.</p>}
         </section>
       )}
 
@@ -223,6 +243,13 @@ export default async function RunPage({
           </ul>
         </section>
       )}
+
+      <NextLink
+        href={`/run/${run.id}/finish`}
+        className="mt-8 block max-w-sm rounded-lg border border-gray-300 bg-white p-3 text-center text-lg font-semibold"
+      >
+        Finish run
+      </NextLink>
     </main>
   );
 }

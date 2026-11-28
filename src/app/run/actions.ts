@@ -1,10 +1,13 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { db } from "@/db";
 import { cashMoves, runs } from "@/db/schema";
+
+import { cashInBag } from "./bag";
 
 // Runs on the server when the Start today form is submitted
 export async function startRun(formData: FormData) {
@@ -95,4 +98,50 @@ export async function loadMachine(formData: FormData) {
   });
 
   revalidatePath(`/run/${runId}`); // show the new totals right away
+}
+
+// Runs on the server when Riley taps "Save and finish"
+export async function finishRun(formData: FormData) {
+  const runId = Number(formData.get("runId"));
+  const endOdometer = Number(formData.get("endOdometer"));
+  const countedLeftover = Number(formData.get("countedLeftover"));
+  const note = String(formData.get("note") ?? "").trim();
+
+  const [run] = await db.select().from(runs).where(eq(runs.id, runId));
+  if (!run || run.status === "finished") {
+    throw new Error("Run not found or already finished");
+  }
+  // Never trust the browser: check again here
+  if (!Number.isInteger(endOdometer) || endOdometer < run.startOdometer) {
+    throw new Error("Ending odometer must be a whole number, not less than the starting one");
+  }
+  if (!Number.isInteger(countedLeftover) || countedLeftover < 0) {
+    throw new Error("Counted cash must be whole dollars");
+  }
+
+  // Work out what SHOULD be in the bag again, from the ledger
+  const moves = await db.select().from(cashMoves).where(eq(cashMoves.runId, runId));
+  const expected = cashInBag(moves);
+  if (countedLeftover !== expected && note === "") {
+    throw new Error("A note is required when the count is different");
+  }
+
+  // Close the run and take the counted cash home, together or not at all
+  await db.transaction(async (tx) => {
+    await tx
+      .update(runs)
+      .set({ endOdometer, countedLeftover, differenceNote: note || null, status: "finished" })
+      .where(eq(runs.id, runId));
+
+    if (countedLeftover > 0) {
+      await tx.insert(cashMoves).values({
+        fromPlace: "run",
+        toPlace: "home",
+        amount: countedLeftover,
+        runId,
+      });
+    }
+  });
+
+  redirect(`/run/${runId}`); // back to the run, now showing the summary
 }
